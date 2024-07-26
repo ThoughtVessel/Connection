@@ -1,0 +1,14 @@
+datasource db {
+  provider = "postgresql"
+  url = env("AWS_URL") // uses connection pooling
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Auth {
+  uid         String     @id @default(dbgenerated()) @unique
+  email       String     @unique
+  password    String
+}
