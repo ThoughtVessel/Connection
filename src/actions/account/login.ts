@@ -1,8 +1,8 @@
 import getDataFromEmail from '@/actions/db/data-from-email';
 import StatusResponse from '@/lib/status-response';
-import bcrypt from 'bcryptjs';
+import validatePassword from '@/lib/verify-password';
 
-// Status 0 success, -1 error, 1 email taken, 2 wrong password
+// Status 0 success, -1 error,  1 email taken, 2 wrong password
 const login = async (email: string, password: string) : Promise<StatusResponse>  => {
   try {
     const user = await getDataFromEmail(email);
@@ -11,7 +11,7 @@ const login = async (email: string, password: string) : Promise<StatusResponse> 
       return { status: 1 };
     }
     if (user.status === 0) {
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await validatePassword(password, user.password);
 
       if (!isMatch) {
         return { status: 2 };

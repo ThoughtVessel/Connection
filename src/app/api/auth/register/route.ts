@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
 import validateEmail from '@/lib/validate-email';
 import register from '@/actions/account/register'
-
+import generateToken from '@/lib/token/generate'
+import hasBody from '@/lib/contains-body';
 
 export async function POST(req: NextRequest) {
-  const { email, password } = await req.json();
+  const hb = await hasBody(req);
+  if (hb === false) {
+    return NextResponse.json({
+        error: 'Request must contain a body'
+      },{
+        status: 400
+      });
+  }
+  const { email, password } = hb;
 
   if (email.length == 0 || password.length == 0) {
     return NextResponse.json({
@@ -36,11 +44,9 @@ export async function POST(req: NextRequest) {
     }, {
       status: 409
     });
-  } 
+  }
 
-  // const token = generateToken(newUser);
+  const token = await generateToken(data.uid);
 
-
-
-  return NextResponse.json({ uid: data.uid }, { status: 200 });
+  return NextResponse.json({ token: token }, { status: 200 });
 }

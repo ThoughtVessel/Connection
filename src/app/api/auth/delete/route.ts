@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import login from '@/actions/account/login';
-import validateEmail from '@/lib/validate-email';
-import generateToken from '@/lib/token/generate'
+import deleteAccount from '@/actions/account/delete';
+import validateToken from '@/lib/token/validate';
+import extractToken from '@/lib/token/extract'
 import hasBody from '@/lib/contains-body';
 
 export async function POST(req: NextRequest) {
@@ -14,23 +14,34 @@ export async function POST(req: NextRequest) {
       });
   }
 
-  const { email, password } = hb;
+  const { password } = hb;
+  const token = await extractToken(req);
 
-  if (email.length == 0 || password.length == 0) {
+  if (token === null || token.length == 0) {
     return NextResponse.json({
-        error: 'Must enter an email and password'
-      },{
-        status: 400
+        error: 'Unauthorized'
+      }, {
+        status: 401
       });
-  } else if (!validateEmail(email)) {
+  } else if (password.length == 0) {
     return NextResponse.json({
-        error: 'Invalid email'
+        error: 'Must enter a password'
       },{
         status: 400
       });
   }
 
-  const data = await login(email, password);
+  const uid = await validateToken(token);
+
+  if (uid == null) {
+    return NextResponse.json({
+      error: 'Invalid token'
+    }, {
+      status: 400
+    });
+  }
+
+  const data = await deleteAccount(String(uid), password);
 
   if (data.status < 0) {
     return NextResponse.json({
@@ -40,9 +51,9 @@ export async function POST(req: NextRequest) {
     });
   } else if (data.status == 1) {
     return NextResponse.json({
-      error: 'Account not found'
+      error: 'Malformed token'
     }, {
-      status: 404
+      status: 400
     });
   } else if (data.status == 2) {
     return NextResponse.json({
@@ -53,7 +64,5 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const token = await generateToken(data.uid);
-
-  return NextResponse.json({ token: token }, { status: 200 });
+  return NextResponse.json({}, { status: 200 });
 }
