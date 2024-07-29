@@ -1,7 +1,6 @@
 import addUser from '@/actions/db/add-user';
 import getDataFromEmail from '@/actions/db/data-from-email';
 import StatusResponse from '@/lib/status-response';
-
 import bcrypt from 'bcryptjs';
 
 // Status 0 success, -1 error, 1 email taken
