@@ -5,8 +5,8 @@ import extractToken from '@/lib/token/extract'
 import hasBody from '@/lib/contains-body';
 
 export async function POST(req: NextRequest) {
-  const hb = await hasBody(req);
-  if (hb === false) {
+  const body = await hasBody(req);
+  if (body === false) {
     return NextResponse.json({
         error: 'Request must contain a body'
       },{
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       });
   }
 
-  const { password } = hb;
+  const { password } = body;
   const token = await extractToken(req);
 
   if (token === null || token.length == 0) {

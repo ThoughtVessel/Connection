@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import login from '@/actions/account/login';
 import validateEmail from '@/lib/validate-email';
-import generateToken from '@/lib/token/generate'
+import generateToken from '@/lib/token/generate';
 import hasBody from '@/lib/contains-body';
 
 export async function POST(req: NextRequest) {
-  const hb = await hasBody(req);
-  if (hb === false) {
+  const body = await hasBody(req);
+  if (body === false) {
     return NextResponse.json({
         error: 'Request must contain a body'
       },{
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       });
   }
 
-  const { email, password } = hb;
+  const { email, password } = body;
 
   if (email.length == 0 || password.length == 0) {
     return NextResponse.json({
