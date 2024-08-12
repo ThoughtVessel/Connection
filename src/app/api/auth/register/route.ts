@@ -1,20 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import validateEmail from '@/lib/validate-email';
-import register from '@/actions/account/register'
-import generateToken from '@/lib/token/generate'
+import register from '@/actions/account/register';
+import generateToken from '@/lib/token/generate';
 import hasBody from '@/lib/contains-body';
 
 export async function POST(req: NextRequest) {
-  const hb = await hasBody(req);
-  if (hb === false) {
+  const body = await hasBody(req);
+  if (body === false) {
     return NextResponse.json({
         error: 'Request must contain a body'
       },{
         status: 400
       });
   }
-  const { email, password } = hb;
+
+  const { email, password } = body;
+
+
 
   if (email.length == 0 || password.length == 0) {
     return NextResponse.json({
