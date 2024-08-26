@@ -1,0 +1,63 @@
+model PortfolioItem {
+  item_id       String    @id @default(dbgenerated()) @unique
+  uid           String
+
+  type          PortfolioType?
+  custom_type   String?
+
+  title         String
+  description   String
+  main_object   String
+  start_date    DateTime?
+  end_date      DateTime?
+
+  roles         PortfolioRole[]
+  objects       PortfolioObject[]
+  links         PortfolioLink[]
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+}
+
+enum PortfolioType {
+  FILM
+  ALBUM
+  TVSHOW
+}
+
+model PortfolioRole {
+  role_id       String @id @default(dbgenerated()) @unique
+  item_id       String
+  role_name     String
+
+  item          PortfolioItem  @relation(fields: [item_id], references: [item_id])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model PortfolioObject {
+  object_id     String  @id @default(dbgenerated()) @unique
+  item_id       String
+
+  datapath      String  @unique
+
+  item          PortfolioItem  @relation(fields: [item_id], references: [item_id])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model PortfolioLink {
+  link_id       String  @id @default(dbgenerated()) @unique
+  item_id       String
+  link_address  String
+  link_text     String
+
+  item          PortfolioItem  @relation(fields: [item_id], references: [item_id])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}

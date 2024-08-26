@@ -1,0 +1,37 @@
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_URL") // uses connection pooling
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+model Auth {
+  uid         String     @id @default(dbgenerated()) @unique
+  email       String     @unique
+  password    String
+
+  profile     Profile?
+
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+}
+
+model Connections {
+  sender_uid    String
+  receiver_uid  String
+  status        RequestStatus
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+
+  @@id([sender_uid, receiver_uid])
+  @@unique([sender_uid, receiver_uid])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

@@ -1,0 +1,97 @@
+model Profile {
+  uid           String     @unique @id
+  description   String?
+
+  headshot      String?
+  main_object   String?
+
+  username    String     @unique
+  first_name  String
+  last_name   String
+
+  objects       ProfileObject[]
+
+  tags          ProfileTag[]
+  socials       Social[]
+  portfolio_items         PortfolioItem[]
+
+  experiences   ProfileExperience[]
+  education     ProfileEducation[]
+  skills        ProfileSkill[]
+
+  auth          Auth       @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model ProfileObject {
+  object_id     String     @id @default(dbgenerated()) @unique
+  uid           String
+
+  datapath      String     @unique
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+}
+
+model ProfileTag {
+  tag_id            String @id @default(dbgenerated()) @unique
+  tag_name          String @unique
+  profiles          Profile[]
+  uid           String
+
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model ProfileExperience {
+  id            String     @id @default(dbgenerated()) @unique
+  uid           String
+
+
+  position      String
+  description   String
+  location      String
+  company_name  String
+
+  start_date    DateTime
+  end_date      DateTime
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model ProfileEducation {
+  id            String     @id @default(dbgenerated()) @unique
+  uid           String
+
+  school_name   String
+  degree        String
+  description   String
+  start_date    DateTime
+  end_date      DateTime
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model ProfileSkill {
+  id            String     @id @default(dbgenerated()) @unique
+  uid           String
+
+  name          String
+  description   String
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}

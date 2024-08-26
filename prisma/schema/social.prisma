@@ -1,0 +1,21 @@
+model Social {
+  social_id     String    @id @default(dbgenerated()) @unique
+  uid           String    @unique
+  title         String
+  description   String?
+  url           String
+
+  type          SocialType
+
+  profile       Profile    @relation(fields: [uid], references: [uid])
+
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+}
+
+enum SocialType {
+  YOUTUBE
+  TWITTER
+  INSTAGRAM
+  REDDIT
+}
